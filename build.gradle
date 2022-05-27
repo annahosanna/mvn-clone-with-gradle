@@ -1,0 +1,28 @@
+# Just some random notes to start with
+# The idea being that instead of a 'copy' the loop would contain a publish
+# And thus gradle dependancies could be defined normally
+# But then published to the duplicate target destination in the loop
+https://gist.github.com/nerro/41cd6f8273a05b3da7cad1f2e9caf1c7
+.forEach { c -> displayConfiguration(c)}
+pc.resolve()
+name = pc.name
+pc.resolvedConfiguration.resolvedArtifacts.each({ResolvedArtifact artifact -> doWhatever(artifact,name)})
+
+https://gist.github.com/n-belokopytov/d44949590748b096c1a497008b761d04
+android.applicationVariants.all { variant ->
+task "copyDeps${variant.name.capitalize()}"() {
+outputs.upToDateWhen { false }
+doLast {
+mkdir 'depsLibs'
+variant.getCompileConfiguration().getResolvedConfiguration().getResolvedArtifacts().each{ artifact ->
+def id = artifact.moduleVersion.id
+def targetName = "${id.group}${id.name}{artifact.type}"
+copy{
+from artifact.file
+into 'depsLibs'
+rename('(.*)',targetName)
+}
+}
+}
+}
+}
